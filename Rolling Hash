@@ -1,0 +1,59 @@
+    ll pw(ll a,ll b,ll modu){
+     if(b==0) return 1;
+
+     if(b%2 == 0){
+        ll t = pw(a,b/2,modu);
+
+        return (t*t)%modu;
+     }
+     else{
+        ll t = pw(a,b-1,modu);
+        return (t*a)%modu;
+     }
+    }
+
+
+    vector<int> solve(string &text,string &pattern){
+        ll m = pattern.size();
+        ll n = text.size();
+        ll modu = 1e9+7;
+        
+        ll hash = 0;
+        
+        vector<ll> pwr(m+1);
+        pwr[0] = 1;
+        
+        for(ll i=1;i<=m;i++){
+            pwr[i] = (26*pwr[i-1])%modu;
+        }
+        
+        for(ll i=0;i<m;i++){
+            hash = (hash+(pwr[i]*(pattern[i]-'a'+1))%modu)%modu;
+        }
+        
+        ll comp = 0;
+        
+        vector<int> ans;
+        ll val = pw(26,modu-2,modu);
+        
+        for(ll i=0;i<n;i++){
+            if(i-m>=0){
+                comp = (comp-(text[i-m]-'a'+1)+modu)%modu;
+            }
+            
+            if(i<m){
+                comp = (comp+((pwr[i]*(text[i]-'a'+1))%modu))%modu;
+            }
+            else{
+                comp = (comp*val)%modu;
+                comp = (comp+((pwr[m-1]*(text[i]-'a'+1))%modu))%modu;
+            }
+            
+            if(comp == hash){
+                ans.push_back(i-m+1);
+            }
+        }
+        
+        return ans;
+        
+    }
